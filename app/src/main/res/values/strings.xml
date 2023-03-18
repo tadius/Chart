@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Chart</string>
+    <string name="btn_go">Поехали</string>
+    <string name="enter_points_title">Введите количество точек</string>
+    <string name="header_y">Y</string>
+    <string name="header_x">X</string>
 </resources>
