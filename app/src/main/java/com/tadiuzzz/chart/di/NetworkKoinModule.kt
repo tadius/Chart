@@ -2,10 +2,10 @@ package com.tadiuzzz.chart.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.tadiuzzz.chart.BuildConfig
 import com.tadiuzzz.chart.data.remote.PointsApiInterface
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.BuildConfig
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
