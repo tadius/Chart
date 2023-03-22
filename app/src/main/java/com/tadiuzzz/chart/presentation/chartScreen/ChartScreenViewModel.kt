@@ -1,6 +1,5 @@
 package com.tadiuzzz.chart.presentation.chartScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.tadiuzzz.chart.domain.use_case.CalculateInitialScale
 import com.tadiuzzz.chart.domain.use_case.GetLastLoadedPointsUseCase
@@ -24,21 +23,25 @@ class ChartScreenViewModel(
     )
     val state = _state.asStateFlow()
 
+    private var minScale = 0f
+
     fun onUserEvent(event: ChartScreenUserEvent) {
         when (event) {
             is ChartScreenUserEvent.OnScaleChange -> {
                 _state.update {
+                    val newScale = it.scale * event.scaleFactor
                     it.copy(
                         firstTime = false,
                         scale = when {
-                            it.scale < 0.5f -> 0.5f
-                            else -> it.scale * event.scaleFactor
+                            newScale <= minScale -> it.scale
+                            else -> newScale
                         }
                     )
                 }
             }
             is ChartScreenUserEvent.OnChartInit -> {
                 val scale = calculateInitialScale(event.center, points)
+                minScale = scale
                 _state.update {
                     it.copy(
                         scale = scale
