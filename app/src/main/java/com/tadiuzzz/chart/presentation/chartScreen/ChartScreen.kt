@@ -1,11 +1,11 @@
 package com.tadiuzzz.chart.presentation.chartScreen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -22,8 +22,16 @@ fun ChartScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    val configuration = LocalConfiguration.current
+
+    val isLandscape = when (configuration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> true
+        else -> false
+    }
+
     ChartScreenContent(
         state = state,
+        isLandscape = isLandscape,
         onUserEvent = { viewModel.onUserEvent(it) }
     )
 
@@ -32,39 +40,94 @@ fun ChartScreen(
 @Composable
 fun ChartScreenContent(
     state: ChartScreenState,
+    isLandscape: Boolean,
     onUserEvent: (event: ChartScreenUserEvent) -> Unit
 ) {
     var isTableScrollable by remember {
         mutableStateOf(true)
     }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Table(
-            points = state.points,
-            isTableScrollable = isTableScrollable,
-            others = listOf {
-                Chart(
-                    points = state.points,
-                    pointsColors = state.pointsColors,
-                    scrollX = state.scrollX,
-                    scrollY = state.scrollY,
-                    scale = state.scale,
-                    onChartAction = { isTouching ->
-                        isTableScrollable = !isTouching
-                    },
-                    onScrollChange = { xOffset: Float, yOffset: Float ->
-                        onUserEvent(ChartScreenUserEvent.OnScrollChange(xOffset, yOffset))
-                    },
-                    onScaleChange = { scaleFactor ->
-                        onUserEvent(ChartScreenUserEvent.OnScaleChange(scaleFactor))
-                    }
-                )
-            }
-        )
+
+    if (isLandscape) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            ChartByState(
+                modifier = Modifier.weight(0.5f),
+                state = state,
+                onUserEvent = onUserEvent,
+                onChartAction = { isTouching ->
+                    isTableScrollable = !isTouching
+                }
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            TableByState(
+                modifier = Modifier.weight(0.5f),
+                state = state,
+                isTableScrollable = isTableScrollable
+            )
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            ChartByState(
+                modifier = Modifier.weight(0.5f),
+                state = state,
+                onUserEvent = onUserEvent,
+                onChartAction = { isTouching ->
+                    isTableScrollable = !isTouching
+                }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            TableByState(
+                modifier = Modifier.weight(0.5f),
+                state = state,
+                isTableScrollable = isTableScrollable
+            )
+        }
     }
+
+}
+
+@Composable
+fun ChartByState(
+    modifier: Modifier = Modifier,
+    state: ChartScreenState,
+    onUserEvent: (event: ChartScreenUserEvent) -> Unit,
+    onChartAction: (isTouching: Boolean) -> Unit,
+    ) {
+    Chart(
+        modifier = modifier,
+        points = state.points,
+        pointsColors = state.pointsColors,
+        scrollX = state.scrollX,
+        scrollY = state.scrollY,
+        scale = state.scale,
+        onChartAction = onChartAction,
+        onScrollChange = { xOffset: Float, yOffset: Float ->
+            onUserEvent(ChartScreenUserEvent.OnScrollChange(xOffset, yOffset))
+        },
+        onScaleChange = { scaleFactor ->
+            onUserEvent(ChartScreenUserEvent.OnScaleChange(scaleFactor))
+        }
+    )
+}
+
+@Composable
+fun TableByState(
+    modifier: Modifier = Modifier,
+    state: ChartScreenState,
+    isTableScrollable: Boolean
+) {
+    Table(
+        modifier = modifier,
+        points = state.points,
+        isTableScrollable = isTableScrollable
+    )
 }
 
 @Preview(showBackground = true)
@@ -82,7 +145,29 @@ private fun ChartScreenPreview() {
                 pointsColors = listOf(
                     Color.Red, Color.Green, Color.Blue, Color.Yellow
                 )
-            )
+            ),
+            isLandscape = false
+        ) {}
+    }
+}
+
+@Preview(showBackground = true, widthDp = 960, heightDp = 400)
+@Composable
+private fun ChartScreenPreviewLandscape() {
+    ChartTheme {
+        ChartScreenContent(
+            state = ChartScreenState(
+                points = listOf(
+                    Point(1f, 3f),
+                    Point(3f, 2f),
+                    Point(5f, 4f),
+                    Point(6f, 8f),
+                ),
+                pointsColors = listOf(
+                    Color.Red, Color.Green, Color.Blue, Color.Yellow
+                )
+            ),
+            isLandscape = true
         ) {}
     }
 }

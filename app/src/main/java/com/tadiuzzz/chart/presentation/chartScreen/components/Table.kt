@@ -1,13 +1,14 @@
 package com.tadiuzzz.chart.presentation.chartScreen.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.tadiuzzz.chart.R
 import com.tadiuzzz.chart.domain.model.Point
 
@@ -15,34 +16,34 @@ import com.tadiuzzz.chart.domain.model.Point
 fun Table(
     modifier: Modifier = Modifier,
     isTableScrollable: Boolean,
-    points: List<Point>,
-    others: List<@Composable () -> Unit> = emptyList()
+    points: List<Point>
 ) {
 
-    TableItem(
-        textA = stringResource(R.string.header_x),
-        textB = stringResource(R.string.header_y),
-        isHeader = true
-    )
-    LazyColumn(
+    Column(
         modifier = modifier
-            .fillMaxWidth(),
-        userScrollEnabled = isTableScrollable
+            .fillMaxSize(),
     ) {
-        points.forEach {
-            item {
-                TableItem(
-                    textA = it.x.toString(),
-                    textB = it.y.toString()
-                )
+        TableItem(
+            textA = stringResource(R.string.header_x),
+            textB = stringResource(R.string.header_y),
+            isHeader = true
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            userScrollEnabled = isTableScrollable
+        ) {
+            points.forEach {
+                item {
+                    TableItem(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
+                        textA = it.x.toString(),
+                        textB = it.y.toString()
+                    )
+                }
             }
         }
-        others.forEach {
-            item {
-                it()
-            }
-        }
-
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -35,8 +36,8 @@ fun Chart(
     scale: Float,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
+            .fillMaxSize()
             .pointerInput(Unit) {
                 forEachGesture {
                     awaitPointerEventScope {
@@ -55,11 +56,9 @@ fun Chart(
                 }
             }
     ) {
-
         Canvas(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(400.dp)
+            modifier = Modifier
+                .fillMaxSize()
                 .clipToBounds()
         ) {
 

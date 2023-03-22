@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TableItem(
+    modifier: Modifier = Modifier,
     textA: String,
     textB: String,
     isHeader: Boolean = false
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
     ) {
         Coordinate(
             modifier = Modifier
