@@ -83,4 +83,7 @@ dependencies {
     implementation "io.insert-koin:koin-android:3.3.3"
     implementation "io.insert-koin:koin-androidx-compose:3.3.0"
 
+    //Capture canvas
+    implementation "dev.shreyaspatil:capturable:1.0.3"
+
 }

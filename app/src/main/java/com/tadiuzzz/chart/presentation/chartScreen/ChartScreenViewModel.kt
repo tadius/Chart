@@ -1,16 +1,20 @@
 package com.tadiuzzz.chart.presentation.chartScreen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tadiuzzz.chart.R
+import com.tadiuzzz.chart.domain.model.Message
 import com.tadiuzzz.chart.domain.use_case.CalculateInitialScale
 import com.tadiuzzz.chart.domain.use_case.GetLastLoadedPointsUseCase
+import com.tadiuzzz.chart.domain.use_case.SaveChartToFileUseCase
 import com.tadiuzzz.chart.presentation.util.RandomColor
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class ChartScreenViewModel(
     private val getLastLoadedPointsUseCase: GetLastLoadedPointsUseCase,
     private val calculateInitialScale: CalculateInitialScale,
+    private val saveChartToFileUseCase: SaveChartToFileUseCase,
 ) : ViewModel() {
 
     val points = getLastLoadedPointsUseCase()
@@ -22,6 +26,9 @@ class ChartScreenViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    private val _messageEvent = MutableSharedFlow<Message>()
+    val messageEvent = _messageEvent.asSharedFlow()
 
     private var minScale = 0f
 
@@ -55,6 +62,18 @@ class ChartScreenViewModel(
                         scrollX = it.scrollX + event.xOffset,
                         scrollY = it.scrollY + event.yOffset,
                     )
+                }
+            }
+            is ChartScreenUserEvent.OnSaveChart -> {
+                if (event.bitmap == null || event.fileUri == null) {
+                    viewModelScope.launch {
+                        _messageEvent.emit(Message(textRes = R.string.save_chart_error))
+                    }
+                } else {
+                    viewModelScope.launch {
+                        saveChartToFileUseCase(event.fileUri, event.bitmap)
+                        _messageEvent.emit(Message(textRes = R.string.save_chart_success))
+                    }
                 }
             }
         }
