@@ -1,5 +1,6 @@
 package com.tadiuzzz.chart.presentation.chartScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
@@ -7,9 +8,7 @@ import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -22,6 +21,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tadiuzzz.chart.domain.model.Point
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @Composable
 fun Chart(
@@ -31,10 +32,15 @@ fun Chart(
     onChartAction: (isTouching: Boolean) -> Unit,
     onScrollChange: (xOffset: Float, yOffset: Float) -> Unit,
     onScaleChange: (scaleFactor: Float) -> Unit,
+    onChartInit: (center: Point) -> Unit,
     scrollX: Float,
     scrollY: Float,
     scale: Float,
+    firstTime: Boolean
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -65,6 +71,12 @@ fun Chart(
             val canvasWidth = size.width
             val canvasHeight = size.height
             val center = Point((canvasWidth / 2f) + scrollX, (canvasHeight / 2f) + scrollY)
+
+            if (firstTime) {
+                coroutineScope.launch {
+                    onChartInit(center)
+                }
+            }
 
             drawRect(
                 color = Color.Black,
@@ -229,6 +241,8 @@ private fun ChartPreview() {
         scrollX = 0f,
         scrollY = 0f,
         scale = 1f,
+        firstTime = false,
+        onChartInit = {}
     )
 }
 

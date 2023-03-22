@@ -99,7 +99,7 @@ fun ChartByState(
     state: ChartScreenState,
     onUserEvent: (event: ChartScreenUserEvent) -> Unit,
     onChartAction: (isTouching: Boolean) -> Unit,
-    ) {
+) {
     Chart(
         modifier = modifier,
         points = state.points,
@@ -107,12 +107,16 @@ fun ChartByState(
         scrollX = state.scrollX,
         scrollY = state.scrollY,
         scale = state.scale,
+        firstTime = state.firstTime,
         onChartAction = onChartAction,
         onScrollChange = { xOffset: Float, yOffset: Float ->
             onUserEvent(ChartScreenUserEvent.OnScrollChange(xOffset, yOffset))
         },
         onScaleChange = { scaleFactor ->
             onUserEvent(ChartScreenUserEvent.OnScaleChange(scaleFactor))
+        },
+        onChartInit = { center ->
+            onUserEvent(ChartScreenUserEvent.OnChartInit(center))
         }
     )
 }

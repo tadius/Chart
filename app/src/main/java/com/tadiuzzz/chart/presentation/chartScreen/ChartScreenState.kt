@@ -7,6 +7,7 @@ data class ChartScreenState(
     val points: List<Point> = emptyList(),
     val pointsColors: List<Color>,
     val scale: Float = 1f,
+    val firstTime: Boolean = true,
     val scrollX: Float = 0f,
     val scrollY: Float = 0f,
 )
