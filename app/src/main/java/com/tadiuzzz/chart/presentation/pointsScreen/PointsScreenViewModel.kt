@@ -3,11 +3,13 @@ package com.tadiuzzz.chart.presentation.pointsScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tadiuzzz.chart.domain.use_case.LoadPointsUseCase
+import com.tadiuzzz.chart.domain.use_case.IsValidNumber
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PointsScreenViewModel(
     private val loadPointsUseCase: LoadPointsUseCase,
+    private val isValidNumber: IsValidNumber,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<PointsScreenState>(PointsScreenState())
@@ -24,11 +26,13 @@ class PointsScreenViewModel(
     }
 
     private fun onPointsCountChanged(countText: String) {
-        _state.update {
-            it.copy(
-                pointsCountText = countText,
-                errorText = null
-            )
+        if (isValidNumber(countText)) {
+            _state.update {
+                it.copy(
+                    pointsCountText = countText,
+                    errorText = null
+                )
+            }
         }
     }
 
